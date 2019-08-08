@@ -1,0 +1,59 @@
+.field {
+  width: 360px;
+  background: rgb(235, 235, 235);
+  font: inherit;
+  border: 0;
+  outline: none;
+  padding: 22px 18px;
+}
+.field:focus {
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.centertext {
+  text-align: center;
+}
+
+div {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+button {
+  background-color: rgb(199, 199, 199);
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+h3 {
+  font-weight: normal;
+}
+
+.text {
+  font-size: 24px;
+  line-height: 35px;
+  letter-spacing: 1px;
+  color: rgb(56, 54, 54);
+}
+
+.status {
+  border: thin;
+  margin-bottom: 30px;
+  height: 80px;
+}
+
+.statusHead {
+  font-size: 16px;
+}
+
+.timer {
+  text-align: right;
+  font-size: 25px;
+  margin-bottom: 30px;
+}
