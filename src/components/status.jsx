@@ -10,7 +10,7 @@ const Status = ({ gameStatus, isGameOver }) =>
       <br />
       <span style={{ fontSize: "25px" }}>
         {gameStatus.wpmStr}
-        <span className="fb">{gameStatus.wpm} &nbsp;</span>
+        <span className="fb">{gameStatus.wpm} &nbsp;&nbsp;&nbsp;</span>
         {gameStatus.timeTakenStr}
         <span className="fb">
           {gameStatus.totalTime.value} {gameStatus.totalTime.unit}

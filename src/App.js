@@ -77,8 +77,10 @@ class App extends Component {
         totalTime = { unit: "sec", value: Math.round(diff / 1000) };
       else totalTime = { unit: "min", value: total.toFixed(2) };
       let spaceCount = 0;
-      for (let chr in randText) if (chr === " ") spaceCount += 1;
+      for (let chr in randText) if (randText[chr] === " ") spaceCount += 1;
       const totalWords = spaceCount + 1;
+      // console.log("Total Time: ", total);
+      // console.log("Total Words: ", totalWords);
       const wpm = (totalWords / total).toFixed(2);
       this.setState({
         gameStatus: {
@@ -125,7 +127,8 @@ class App extends Component {
         current: prevState.current + 1
       }));
     } else if (!this.isValidChar(key, randText[current])) {
-      if (keyCode === 16 || keyCode === 18 || keyCode === 20) return;
+      if (keyCode === 16 || keyCode === 18 || keyCode === 20 || keyCode === 17)
+        return;
       const wrongCount = wrong + 1;
       const newRenderRed = [...renderWrong, randText[current + wrongCount - 1]];
       let newuntouched = [...untouched];

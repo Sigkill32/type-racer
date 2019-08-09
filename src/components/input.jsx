@@ -9,7 +9,6 @@ const Input = ({
 }) => (
   <input
     placeholder="Type here to start racing"
-    className="field"
     onChange={onHandleChange}
     onKeyDown={onHandleKeyDown}
     disabled={isInputDisabled ? "disabled" : ""}
