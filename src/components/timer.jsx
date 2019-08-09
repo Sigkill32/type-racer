@@ -1,22 +1,21 @@
 import React from "react";
 
-const Timer = ({ time, isGameOver }) => {
-  return (
-    //   <h3>
-    //     Total Time Taken: {time.min} min:{time.sec} sec
-    //   </h3>
-    // ) : (
-    //   <h3>
-    //     Time Elapsed: {time.min} min: {time.sec} sec
-    //   </h3>
+const getTime = time => {
+  const min = Math.floor(time / 60);
+  const sec = time % 60;
+  return { min, sec };
+};
 
+const Timer = ({ time }) => {
+  const timeObj = getTime(time);
+  return (
     <div className="timer">
       <span>
-        {time.min < 10 ? `0${time.min}` : time.min}{" "}
+        {timeObj.min < 10 ? `0${timeObj.min}` : timeObj.min}&nbsp;
         <span style={{ fontSize: "15px" }}>M :&nbsp; </span>
       </span>
       <span>
-        {time.sec < 10 ? `0${time.sec}` : time.sec}{" "}
+        {timeObj.sec < 10 ? `0${timeObj.sec}` : timeObj.sec}&nbsp;
         <span style={{ fontSize: "15px" }}>S</span>
       </span>
     </div>

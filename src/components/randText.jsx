@@ -3,19 +3,19 @@ import "./styles.css";
 
 class RandText extends Component {
   render() {
-    const { splitA, splitB, splitC } = this.props;
-    const splitBStr = splitB.join("");
-    const splitAStr = splitA.join("");
-    const splitCstr = splitC.join("");
+    const { renderGreen, renderBlack, renderRed } = this.props;
+    const renderBlackStr = renderBlack.join("");
+    const renderGreenStr = renderGreen.join("");
+    const renderRedstr = renderRed.join("");
     return (
       <div>
         <span className="text" style={{ color: "#98FB98" }}>
-          {splitAStr}
+          {renderGreenStr}
         </span>
         <span className="text" style={{ backgroundColor: "red" }}>
-          {splitCstr}
+          {renderRedstr}
         </span>
-        <span className="text">{splitBStr}</span>
+        <span className="text">{renderBlackStr}</span>
       </div>
     );
   }

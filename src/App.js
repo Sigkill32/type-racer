@@ -5,97 +5,23 @@ import axios from "axios";
 import Button from "./components/button";
 import Status from "./components/status";
 import Timer from "./components/timer";
-import { async } from "q";
 
 class App extends Component {
   state = {
-    randText: [
-      "C",
-      "l",
-      "i",
-      "c",
-      "k",
-      " ",
-      "o",
-      "n",
-      " ",
-      "s",
-      "t",
-      "a",
-      "r",
-      "t",
-      " ",
-      "b",
-      "u",
-      "t",
-      "t",
-      "o",
-      "n",
-      " ",
-      "t",
-      "o",
-      " ",
-      "b",
-      "e",
-      "g",
-      "i",
-      "n",
-      " ",
-      "r",
-      "a",
-      "c",
-      "e"
-    ],
-    splitA: [],
-    splitB: [
-      "C",
-      "l",
-      "i",
-      "c",
-      "k",
-      " ",
-      "o",
-      "n",
-      " ",
-      "s",
-      "t",
-      "a",
-      "r",
-      "t",
-      " ",
-      "b",
-      "u",
-      "t",
-      "t",
-      "o",
-      "n",
-      " ",
-      "t",
-      "o",
-      " ",
-      "b",
-      "e",
-      "g",
-      "i",
-      "n",
-      " ",
-      "r",
-      "a",
-      "c",
-      "e"
-    ],
-    splitC: [],
+    randText: [],
+    renderGreen: [],
+    renderBlack: [],
+    renderRed: [],
     text: "",
     current: 0,
     wrong: 0,
     isInputDisabled: true,
     isButtonDisabled: false,
-    semiStatus: "",
-    gameStatus: "",
-    start: 0,
-    time: { min: 0, sec: 0 },
-    timeoutId: undefined,
-    gameTimerId: undefined,
+    gameStatus: {},
+    startTime: 0,
+    time: 0,
+    timeoutId: null,
+    gameTimerId: null,
     isGameOver: false
   };
 
@@ -105,42 +31,21 @@ class App extends Component {
     this.setState({ text: isValidText ? text.trim() : "" });
   };
 
-  isValidChar = (input, current) => {
-    return input === current ? true : false;
-  };
-
-  // async componentDidMount() {
-  //   try {
-  //     const { data } = await axios.get("http://www.randomtext.me/api/");
-  //     const randTextData = this.cleanMarkup(data.text_out);
-  //     const randText = randTextData.split("");
-  //     this.setState({ randText, splitB: randText, isDataFetched: true });
-  //   } catch (error) {
-  //     const networkError = "Could not fetch data. Please try again.".split("");
-  //     console.log(error);
-  //     this.setState({
-  //       splitB: networkError,
-  //       gameStatus: "Network Error. Please Reload"
-  //     });
-  //   }
-  // }
+  isValidChar = (input, current) => input === current;
 
   fetchData = async () => {
     try {
-      this.setState({ splitB: "Loading, Please wait..".split("") });
+      this.setState({ renderBlack: "Loading, Please wait..".split("") });
       const { data } = await axios.get("http://www.randomtext.me/api/");
       const randTextData = this.cleanMarkup(data.text_out);
       const randText = randTextData.split("");
-      this.setState({ randText, splitB: randText });
-      return true;
+      this.setState({ randText, renderBlack: randText });
     } catch (error) {
       const networkError = "Could not fetch data. Please try again.".split("");
-      console.log(error);
       this.setState({
-        splitB: networkError,
+        renderBlack: networkError,
         gameStatus: "Network Error. Please Reload"
       });
-      return false;
     }
   };
 
@@ -154,34 +59,28 @@ class App extends Component {
     const keyCode = e.keyCode;
     const key = e.key;
     const {
-      splitA,
-      splitB,
-      splitC,
+      renderGreen,
+      renderBlack,
+      renderRed,
       current,
       wrong,
       randText,
       text,
-      start,
+      startTime,
       gameTimerId
     } = this.state;
     if (current === randText.length - 1) {
-      let diff = Math.abs(new Date(Date.now()) - new Date(start));
+      let diff = Math.abs(new Date(Date.now()) - new Date(startTime));
       const total = diff / 1000 / 60;
       let totalTime;
-      console.log(total);
-      if (total < 1) {
+      if (total < 1)
         totalTime = { unit: "sec", value: Math.round(diff / 1000) };
-        console.log("Less");
-      } else {
-        totalTime = { unit: "min", value: total.toFixed(2) };
-        console.log("Greater");
-      }
+      else totalTime = { unit: "min", value: total.toFixed(2) };
       let spaceCount = 0;
       for (let chr in randText) if (chr === " ") spaceCount += 1;
       const totalWords = spaceCount + 1;
       const wpm = (totalWords / total).toFixed(2);
       this.setState({
-        semiStatus: "Game Over",
         gameStatus: {
           wpmStr: "Your WPM: ",
           wpm: wpm,
@@ -193,84 +92,81 @@ class App extends Component {
         isInputDisabled: true
       });
       clearInterval(gameTimerId);
-      console.log(wpm);
     }
     if (keyCode === 8) {
       if (text === "") return;
       if (wrong > 0) {
-        const newSplitC = [...splitC];
-        const last = newSplitC.pop();
-        const newSplitB = [last, ...splitB];
+        const newRenderRed = [...renderRed];
+        const last = newRenderRed.pop();
+        const newrenderBlack = [last, ...renderBlack];
         this.setState(prevState => ({
           wrong: prevState.wrong - 1,
-          splitC: newSplitC,
-          splitB: newSplitB
+          renderRed: newRenderRed,
+          renderBlack: newrenderBlack
         }));
       } else if (wrong === 0 && current > 0) {
         const currentCount = current - 1;
-        const newSplitA = [...splitA];
-        const last = newSplitA.pop();
-        const newSplitB = [last, ...splitB];
+        const newrenderGreen = [...renderGreen];
+        const last = newrenderGreen.pop();
+        const newrenderBlack = [last, ...renderBlack];
         this.setState({
           current: currentCount,
-          splitA: newSplitA,
-          splitB: newSplitB
+          renderGreen: newrenderGreen,
+          renderBlack: newrenderBlack
         });
       }
     } else if (this.isValidChar(key, randText[current])) {
       if (keyCode === 32) this.setState({ text: "" });
-      console.log(this.state.time);
-      const newsplitA = [...splitA, randText[current]];
-      const newSplitB = splitB.slice(1);
+      const newrenderGreen = [...renderGreen, randText[current]];
+      const newrenderBlack = renderBlack.slice(1);
       this.setState(prevState => ({
-        splitA: newsplitA,
-        splitB: newSplitB,
+        renderGreen: newrenderGreen,
+        renderBlack: newrenderBlack,
         current: prevState.current + 1
       }));
     } else if (!this.isValidChar(key, randText[current])) {
       if (keyCode === 16 || keyCode === 18 || keyCode === 20) return;
       const wrongCount = wrong + 1;
-      const newSplitC = [...splitC, randText[current + wrongCount - 1]];
-      let newSplitB = [...splitB];
-      newSplitB = newSplitB.slice(1);
+      const newRenderRed = [...renderRed, randText[current + wrongCount - 1]];
+      let newrenderBlack = [...renderBlack];
+      newrenderBlack = newrenderBlack.slice(1);
       this.setState({
-        splitC: newSplitC,
+        renderRed: newRenderRed,
         wrong: wrongCount,
-        splitB: newSplitB
+        renderBlack: newrenderBlack
       });
     }
   };
 
   handleClick = async () => {
     this.setState(prevState => ({
-      gameStatus: "Loading Content. Get Ready.",
+      gameStatus: { gameStr: "Loading Content. Get Ready." },
       isButtonDisabled: !prevState.isButtonDisabled
     }));
-    const isDataFetched = await this.fetchData();
-    if (isDataFetched) {
-      console.log(isDataFetched);
-      this.setState({ gameStatus: "3" });
-      const timeoutId = setInterval(this.countDown, 1000);
-      this.setState({ timeoutId });
-    }
+    await this.fetchData();
+    this.setState({ gameStatus: { gameStr: "3" } });
+    const timeoutId = setInterval(this.countDown, 1000);
+    this.setState({ timeoutId });
   };
 
   countDown = () => {
     const { gameStatus, timeoutId } = this.state;
-    if (gameStatus === 1) {
-      this.setState({ gameStatus: "The Race Has Begun" });
+    if (parseInt(gameStatus.gameStr) === 1) {
+      this.setState({ gameStatus: { gameStr: "The Race Has Begun" } });
       clearInterval(timeoutId);
       this.toggleStates();
       if (this.focusInput !== null) this.focusInput.focus();
     }
-    if (gameStatus > 1)
-      this.setState(prevState => ({ gameStatus: prevState.gameStatus - 1 }));
+    if (parseInt(gameStatus.gameStr) > 1)
+      this.setState(prevState => ({
+        gameStatus: { gameStr: prevState.gameStatus.gameStr - 1 }
+      }));
   };
 
   toggleStates = () => {
     this.setState(prevState => ({
       isInputDisabled: !prevState.isInputDisabled,
-      start: Date.now()
+      startTime: Date.now()
     }));
     this.gameTimer();
   };
@@ -281,43 +177,45 @@ class App extends Component {
   };
 
   countUp = () => {
-    const { time } = this.state;
-    if (time.sec === 59)
-      this.setState(prevState => ({
-        time: { min: prevState.time.min + 1, sec: 0 }
-      }));
-    else
-      this.setState(prevState => ({
-        time: { min: prevState.time.min, sec: prevState.time.sec + 1 }
-      }));
+    this.setState(prevState => ({
+      time: prevState.time + 1
+    }));
   };
+
+  componentDidMount() {
+    const initMsg = "Click on Start to begin the race".split("");
+    this.setState({ randText: initMsg, renderBlack: initMsg });
+  }
 
   render() {
     const {
       text,
-      splitA,
-      splitB,
-      splitC,
+      renderGreen,
+      renderBlack,
+      renderRed,
       isButtonDisabled,
       isInputDisabled,
       gameStatus,
       time,
-      isGameOver,
-      semiStatus
+      isGameOver
     } = this.state;
     return (
       <div>
         <h1
-          className="centertext"
+          className="text-center"
           style={{ fontSize: "40px", fontWeight: "normal" }}
         >
           Type Racer
         </h1>
         <Timer time={time} isGameOver={isGameOver} />
         <hr />
-        <RandText splitA={splitA} splitB={splitB} splitC={splitC} />
+        <RandText
+          renderGreen={renderGreen}
+          renderBlack={renderBlack}
+          renderRed={renderRed}
+        />
         <hr style={{ marginBottom: "50px" }} />
-        <div className="centertext status">
+        <div className="text-center status">
           <Button
             onHandleClick={this.handleClick}
             isButtonDisabled={isButtonDisabled}
@@ -326,10 +224,9 @@ class App extends Component {
             className="statusHead"
             isGameOver={isGameOver}
             gameStatus={gameStatus}
-            semiStatus={semiStatus}
           />
         </div>
-        <div className="centertext">
+        <div className="text-center">
           <Input
             onHandleChange={this.handleChange}
             onHandleKeyDown={this.handleKeyDown}

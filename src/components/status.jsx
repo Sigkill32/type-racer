@@ -1,25 +1,24 @@
 import React from "react";
 
-const Status = ({ gameStatus, semiStatus, isGameOver }) => {
-  return isGameOver ? (
+const Status = ({ gameStatus, isGameOver }) =>
+  isGameOver ? (
     <React.Fragment>
-      <span style={{ fontSize: "30px", color: "red" }}>{semiStatus}</span>
+      <span style={{ fontSize: "30px", color: "red" }}>
+        {isGameOver ? "Game Over" : ""}
+      </span>
       <br />
       <br />
       <span style={{ fontSize: "25px" }}>
         {gameStatus.wpmStr}
-        <span style={{ fontSize: "25px", fontWeight: "bold" }}>
-          {gameStatus.wpm} &nbsp;
-        </span>
+        <span className="fb">{gameStatus.wpm} &nbsp;</span>
         {gameStatus.timeTakenStr}
-        <span style={{ fontSize: "25px", fontWeight: "bold" }}>
+        <span className="fb">
           {gameStatus.totalTime.value} {gameStatus.totalTime.unit}
         </span>
       </span>
     </React.Fragment>
   ) : (
-    <span style={{ fontSize: "30px" }}>{gameStatus}</span>
+    <span style={{ fontSize: "30px" }}>{gameStatus.gameStr}</span>
   );
-};
 
 export default Status;
