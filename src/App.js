@@ -9,9 +9,9 @@ import Timer from "./components/timer";
 class App extends Component {
   state = {
     randText: [],
-    renderGreen: [],
-    renderBlack: [],
-    renderRed: [],
+    renderCorrect: [],
+    untouched: [],
+    renderWrong: [],
     text: "",
     current: 0,
     wrong: 0,
@@ -35,16 +35,16 @@ class App extends Component {
 
   fetchData = async () => {
     try {
-      this.setState({ renderBlack: "Loading, Please wait..".split("") });
+      this.setState({ untouched: "Loading, Please wait..".split("") });
       const { data } = await axios.get("http://www.randomtext.me/api/");
       const randTextData = this.cleanMarkup(data.text_out);
       const randText = randTextData.split("");
-      this.setState({ randText, renderBlack: randText });
+      this.setState({ randText, untouched: randText });
     } catch (error) {
       const networkError = "Could not fetch data. Please try again.".split("");
       this.setState({
-        renderBlack: networkError,
-        gameStatus: "Network Error. Please Reload"
+        untouched: networkError,
+        gameStatus: { currentStatus: "Network Error. Please Reload" }
       });
     }
   };
@@ -59,9 +59,9 @@ class App extends Component {
     const keyCode = e.keyCode;
     const key = e.key;
     const {
-      renderGreen,
-      renderBlack,
-      renderRed,
+      renderCorrect,
+      untouched,
+      renderWrong,
       current,
       wrong,
       randText,
@@ -96,70 +96,70 @@ class App extends Component {
     if (keyCode === 8) {
       if (text === "") return;
       if (wrong > 0) {
-        const newRenderRed = [...renderRed];
+        const newRenderRed = [...renderWrong];
         const last = newRenderRed.pop();
-        const newrenderBlack = [last, ...renderBlack];
+        const newuntouched = [last, ...untouched];
         this.setState(prevState => ({
           wrong: prevState.wrong - 1,
-          renderRed: newRenderRed,
-          renderBlack: newrenderBlack
+          renderWrong: newRenderRed,
+          untouched: newuntouched
         }));
       } else if (wrong === 0 && current > 0) {
         const currentCount = current - 1;
-        const newrenderGreen = [...renderGreen];
-        const last = newrenderGreen.pop();
-        const newrenderBlack = [last, ...renderBlack];
+        const newrenderCorrect = [...renderCorrect];
+        const last = newrenderCorrect.pop();
+        const newuntouched = [last, ...untouched];
         this.setState({
           current: currentCount,
-          renderGreen: newrenderGreen,
-          renderBlack: newrenderBlack
+          renderCorrect: newrenderCorrect,
+          untouched: newuntouched
         });
       }
     } else if (this.isValidChar(key, randText[current])) {
       if (keyCode === 32) this.setState({ text: "" });
-      const newrenderGreen = [...renderGreen, randText[current]];
-      const newrenderBlack = renderBlack.slice(1);
+      const newrenderCorrect = [...renderCorrect, randText[current]];
+      const newuntouched = untouched.slice(1);
       this.setState(prevState => ({
-        renderGreen: newrenderGreen,
-        renderBlack: newrenderBlack,
+        renderCorrect: newrenderCorrect,
+        untouched: newuntouched,
         current: prevState.current + 1
       }));
     } else if (!this.isValidChar(key, randText[current])) {
       if (keyCode === 16 || keyCode === 18 || keyCode === 20) return;
       const wrongCount = wrong + 1;
-      const newRenderRed = [...renderRed, randText[current + wrongCount - 1]];
-      let newrenderBlack = [...renderBlack];
-      newrenderBlack = newrenderBlack.slice(1);
+      const newRenderRed = [...renderWrong, randText[current + wrongCount - 1]];
+      let newuntouched = [...untouched];
+      newuntouched = newuntouched.slice(1);
       this.setState({
-        renderRed: newRenderRed,
+        renderWrong: newRenderRed,
         wrong: wrongCount,
-        renderBlack: newrenderBlack
+        untouched: newuntouched
       });
     }
   };
 
   handleClick = async () => {
     this.setState(prevState => ({
-      gameStatus: { gameStr: "Loading Content. Get Ready." },
+      gameStatus: { currentStatus: "Loading Content. Get Ready." },
       isButtonDisabled: !prevState.isButtonDisabled
     }));
     await this.fetchData();
-    this.setState({ gameStatus: { gameStr: "3" } });
+    this.setState({ gameStatus: { currentStatus: "3" } });
     const timeoutId = setInterval(this.countDown, 1000);
     this.setState({ timeoutId });
   };
 
   countDown = () => {
     const { gameStatus, timeoutId } = this.state;
-    if (parseInt(gameStatus.gameStr) === 1) {
-      this.setState({ gameStatus: { gameStr: "The Race Has Begun" } });
+    if (parseInt(gameStatus.currentStatus) === 1) {
+      this.setState({ gameStatus: { currentStatus: "The Race Has Begun" } });
       clearInterval(timeoutId);
       this.toggleStates();
       if (this.focusInput !== null) this.focusInput.focus();
     }
-    if (parseInt(gameStatus.gameStr) > 1)
+    if (parseInt(gameStatus.currentStatus) > 1)
       this.setState(prevState => ({
-        gameStatus: { gameStr: prevState.gameStatus.gameStr - 1 }
+        gameStatus: { currentStatus: prevState.gameStatus.currentStatus - 1 }
       }));
   };
 
@@ -184,15 +184,15 @@ class App extends Component {
 
   componentDidMount() {
     const initMsg = "Click on Start to begin the race".split("");
-    this.setState({ randText: initMsg, renderBlack: initMsg });
+    this.setState({ randText: initMsg, untouched: initMsg });
   }
 
   render() {
     const {
       text,
-      renderGreen,
-      renderBlack,
-      renderRed,
+      renderCorrect,
+      untouched,
+      renderWrong,
       isButtonDisabled,
       isInputDisabled,
       gameStatus,
@@ -210,9 +210,9 @@ class App extends Component {
         <Timer time={time} isGameOver={isGameOver} />
         <hr />
         <RandText
-          renderGreen={renderGreen}
-          renderBlack={renderBlack}
-          renderRed={renderRed}
+          renderCorrect={renderCorrect}
+          untouched={untouched}
+          renderWrong={renderWrong}
         />
         <hr style={{ marginBottom: "50px" }} />
         <div className="text-center status">

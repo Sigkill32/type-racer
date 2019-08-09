@@ -18,7 +18,7 @@ const Status = ({ gameStatus, isGameOver }) =>
       </span>
     </React.Fragment>
   ) : (
-    <span style={{ fontSize: "30px" }}>{gameStatus.gameStr}</span>
+    <span style={{ fontSize: "30px" }}>{gameStatus.currentStatus}</span>
   );
 
 export default Status;
